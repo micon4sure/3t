@@ -52,7 +52,7 @@ export default class Game {
 			this.done = true;
 			return;
 		}
-		player.score += 10;
+		//player.score += 10;
 
 		this.next = this.next == 0.5 ? 1 : 0.5;
 	}

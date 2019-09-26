@@ -22,7 +22,7 @@
 
 <script>
 import _ from "lodash";
-import { Neat, methods } from '@liquid-carrot/carrot';
+import { Neat, methods, architect } from '@liquid-carrot/carrot';
 /*import Neat from '../../node_modules/@liquid-carrot/carrot/src/neat'
 import mutation from '../../node_modules/@liquid-carrot/carrot/src/methods/mutation'
 */
@@ -64,8 +64,16 @@ export default {
 			this.turn = 0;
 			for (let i = 0; i < 72; ) {
 				const game = new Game(this.generation + ":" + i);
-				const playerOne = this.neatPOne.population[i]
-				const playerTwo = this.neatPTwo.population[i++];
+				let playerOne = this.neatPOne.population[i]
+        let playerTwo = this.neatPTwo.population[i++];
+        
+        // in case of error during evolution, need to set new networks by hand, just use a perceptron.
+        if(playerOne === undefined) {
+          playerOne = architect.Perceptron(9, 9, 9, 9);
+        }
+        if(playerTwo === undefined) {
+          playerTwo = architect.Perceptron(9, 9, 9, 9);
+        }
 
 				game.setPOne(playerOne);
 				game.setPTwo(playerTwo);
@@ -95,9 +103,9 @@ export default {
 			elitism: 3,
 			mutation_rate: 0.9,
 			mutation_amount: 3,
-			maxNodes: 128,
-			maxConnections: 10000,
-      maxGates: 256,
+			maxNodes: 32,
+			maxConnections: 1000,
+      maxGates: 0,
       mutation: methods.mutation.FFW,
 		};
 		this.neatPOne = new Neat(9, 1, options);
@@ -131,8 +139,8 @@ export default {
 				window.clearInterval(turnInterval);
 				window.setTimeout(async () => {
           try {
-					await this.neatPOne.evolve();
-					await this.neatPTwo.evolve();
+  					await this.neatPOne.evolve();
+	  				await this.neatPTwo.evolve();
           } catch(error) {
             console.log('EVOLVE ERROR CAUGHT', error)
           }
