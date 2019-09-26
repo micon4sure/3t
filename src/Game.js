@@ -9,7 +9,7 @@ export default class Game {
 		this.id = id;
 		this.status = "going";
 		this.done = false;
-		this.next = 0.5;
+		this.turnPlayer = 0.5;
 		this.board = [0, 0, 0, 0, 0, 0, 0, 0, 0];
 	}
 
@@ -25,7 +25,7 @@ export default class Game {
 	turn() {
 		const player = this.turn == 0.5 ? this.pOne : this.pTwo;
 		const moveRaw = player.activate(this.board);
-    let moveDenormalized = denormalize(9, 0, moveRaw);
+    let moveDenormalized = denormalize(8, 0, moveRaw);
     if(moveDenormalized < 0)
     moveDenormalized = moveDenormalized * -1;
     const move = Math.round(moveDenormalized);
@@ -36,8 +36,15 @@ export default class Game {
 			//console.log("GAME", this.id, "LOST BY", this.next);
 			this.done = true;
 			return;
-		}
-		this.board[move] = this.next;
+    }
+    
+    // check if this move prevents a win for the other player
+    this.board[move] = this.turnPlayer == .5 ? 1 : .5;
+    if(this.checkForWin()) {
+      player.score += 75;
+    }
+
+		this.board[move] = this.turnPlayer;
 
 		if (this.checkForDraw()) {
 			this.status = "draw";
@@ -47,14 +54,14 @@ export default class Game {
 		}
 
 		if (this.checkForWin()) {
-			this.status = "win" + (this.next == 0.5 ? 1 : 2);
+			this.status = "win" + (this.turnPlayer == 0.5 ? 1 : 2);
 			player.score += 100;
 			this.done = true;
 			return;
 		}
-		//player.score += 10;
+		player.score += 10;
 
-		this.next = this.next == 0.5 ? 1 : 0.5;
+		this.turnPlayer = this.turnPlayer == 0.5 ? 1 : 0.5;
 	}
 
 	checkForDraw() {

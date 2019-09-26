@@ -2,6 +2,7 @@
 	<div class="home">
     <input v-model="turnDelay"/>
     <input v-model="roundDelay"/>
+    <input v-model="drawDelay"/>
 		<div class="game playerBoard">
 			<Playerboard :alpha="alpha" />
 		</div>
@@ -31,10 +32,12 @@ import Playerboard from "./Playerboard.vue";
 import Game from "../Game.js";
 
 const CONFIG = {
-  games: 72,
+  games: 12,
+  elitism: 4,
   wait_on_draw: 30000,
   roundDelay: 50,
-  turnDelay: 10
+  turnDelay: 10,
+  drawDelay: 500
 };
 
 export default {
@@ -59,7 +62,8 @@ export default {
 			alpha: null,
       maxTurns: 0,
       turnDelay: CONFIG.turnDelay,
-      roundDelay: CONFIG.roundDelay
+      roundDelay: CONFIG.roundDelay,
+      drawDelay: CONFIG.drawDelay
 		};
 	},
 	methods: {
@@ -107,11 +111,11 @@ export default {
 	created() {
 		const options = {
 			population_size: CONFIG.games,
-			elitism: 3,
+			elitism: CONFIG.elitism,
 			mutation_rate: 0.9,
-			mutation_amount: 3,
-			maxNodes: 32,
-			maxConnections: 1000,
+			mutation_amount: 2,
+			maxNodes: 19,
+			maxConnections: 100,
       maxGates: 0,
       mutation: methods.mutation.FFW,
 		};
@@ -140,7 +144,7 @@ export default {
 						this.maxTurns = this.turn;
 					}
 					if (game.status == "draw") {
-						wait = 30000;
+						wait = this.drawDelay;
 					}
 				});
 				window.clearInterval(turnInterval);

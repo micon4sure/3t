@@ -1,5 +1,5 @@
 <template>
-	<table>
+	<table :data-board="board">
 		<tr>
 			<td>{{ format(board[0]) }}</td>
 			<td>{{ format(board[1]) }}</td>
