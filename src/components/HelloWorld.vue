@@ -30,6 +30,13 @@ import Board from "./Board.vue";
 import Playerboard from "./Playerboard.vue";
 import Game from "../Game.js";
 
+const CONFIG = {
+  games: 72,
+  wait_on_draw: 30000,
+  roundDelay: 50,
+  turnDelay: 10
+};
+
 export default {
 	mixins: [],
 	props: [],
@@ -51,8 +58,8 @@ export default {
 			hiBoard: null,
 			alpha: null,
       maxTurns: 0,
-      turnDelay: 10,
-      roundDelay: 50
+      turnDelay: CONFIG.turnDelay,
+      roundDelay: CONFIG.roundDelay
 		};
 	},
 	methods: {
@@ -62,7 +69,7 @@ export default {
 		play() {
 			this.games = [];
 			this.turn = 0;
-			for (let i = 0; i < 72; ) {
+			for (let i = 0; i < CONFIG.games; ) {
 				const game = new Game(this.generation + ":" + i);
 				let playerOne = this.neatPOne.population[i]
         let playerTwo = this.neatPTwo.population[i++];
@@ -99,7 +106,7 @@ export default {
 	computed: {},
 	created() {
 		const options = {
-			population_size: 72,
+			population_size: CONFIG.games,
 			elitism: 3,
 			mutation_rate: 0.9,
 			mutation_amount: 3,

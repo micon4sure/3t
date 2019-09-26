@@ -20,7 +20,6 @@
 			<td colspan="3">{{board}}</td>
 		</tr>
 	</table>
-  {{alpha}}
   <svg id="graph"/>
   </div>
 </template>
