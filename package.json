@@ -7,7 +7,7 @@
     "build": "vue-cli-service build"
   },
   "dependencies": {
-    "@liquid-carrot/carrot": "^0.3.14",
+    "@liquid-carrot/carrot": "^0.3.11",
     "cola": "^0.1.7",
     "core-js": "^2.6.5",
     "lodash": "^4.17.15",

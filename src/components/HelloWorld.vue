@@ -64,7 +64,7 @@ export default {
 			this.turn = 0;
 			for (let i = 0; i < 72; ) {
 				const game = new Game(this.generation + ":" + i);
-				const playerOne = this.neatPOne.population[i];
+				const playerOne = this.neatPOne.population[i]
 				const playerTwo = this.neatPTwo.population[i++];
 
 				game.setPOne(playerOne);
@@ -98,7 +98,7 @@ export default {
 			maxNodes: 128,
 			maxConnections: 10000,
       maxGates: 256,
-      //mutation: mutation.FFW,
+      mutation: methods.mutation.FFW,
 		};
 		this.neatPOne = new Neat(9, 1, options);
 		this.neatPTwo = new Neat(9, 1, options);
