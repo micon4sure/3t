@@ -41,7 +41,7 @@ export default class Game {
 
 		if (this.checkForDraw()) {
 			this.status = "draw";
-			play.score += 1000;
+			player.score += 1000;
 			this.done = true;
 			return;
 		}

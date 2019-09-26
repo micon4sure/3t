@@ -130,8 +130,12 @@ export default {
 				});
 				window.clearInterval(turnInterval);
 				window.setTimeout(async () => {
+          try {
 					await this.neatPOne.evolve();
 					await this.neatPTwo.evolve();
+          } catch(error) {
+            console.log('EVOLVE ERROR CAUGHT', error)
+          }
 					this.done = false;
 					this.score = 0;
 					this.play();
