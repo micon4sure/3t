@@ -9,7 +9,7 @@ export default class Game {
 		this.id = id;
 		this.status = "going";
 		this.done = false;
-		this.turnPlayer = 0.5;
+		this.turn = 0.5;
 		this.board = [0, 0, 0, 0, 0, 0, 0, 0, 0];
 	}
 
@@ -22,8 +22,9 @@ export default class Game {
 		this.pTwo = network;
 	}
 
-	turn() {
-		const player = this.turn == 0.5 ? this.pOne : this.pTwo;
+	playTurn() {
+    const player = this.turn == 0.5 ? this.pOne : this.pTwo;
+    const otherPlayer = this.turn == 1 ? this.pOne : this.pTwo;
 		const moveRaw = player.activate(this.board);
     let moveDenormalized = denormalize(8, 0, moveRaw);
     if(moveDenormalized < 0)
@@ -39,29 +40,29 @@ export default class Game {
     }
     
     // check if this move prevents a win for the other player
-    this.board[move] = this.turnPlayer == .5 ? 1 : .5;
+    this.board[move] = this.turn == .5 ? 1 : .5;
     if(this.checkForWin()) {
-      player.score += 75;
+      player.score += 3;
     }
-
-		this.board[move] = this.turnPlayer;
-
+    
+		this.board[move] = this.turn;
+    
 		if (this.checkForDraw()) {
-			this.status = "draw";
-			player.score += 1000;
+      this.status = "draw";
 			this.done = true;
 			return;
 		}
-
+    
 		if (this.checkForWin()) {
-			this.status = "win" + (this.turnPlayer == 0.5 ? 1 : 2);
-			player.score += 100;
+      this.status = "win" + (this.turn == 0.5 ? 1 : 2);
+			player.score += 5;
+      otherPlayer.score -= 5;
 			this.done = true;
 			return;
 		}
-		player.score += 10;
+		player.score += 1;
 
-		this.turnPlayer = this.turnPlayer == 0.5 ? 1 : 0.5;
+		this.turn = this.turn == 0.5 ? 1 : 0.5;
 	}
 
 	checkForDraw() {

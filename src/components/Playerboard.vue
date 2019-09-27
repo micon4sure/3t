@@ -62,7 +62,7 @@ export default {
 			this.key++;
 
 			if (this.checkForWin()) {
-				console.log("WIN");
+				console.log("YOU WIN");
 				reset();
 			}
 
@@ -70,14 +70,14 @@ export default {
 			const moveDenormalized = denormalize(9, 0, moveRaw);
 			const move = Math.round(moveDenormalized);
 			if (this.board[move] != 0) {
-				console.log("WIN");
+				console.log("THE CARROT LOST, MOVE ON CELL", move, "IS ILLEGAL");
 				reset();
 			}
 
 			this.board[move] = 1;
 
 			if (this.checkForWin()) {
-				console.log("LOSE");
+				console.log("THE CARROT WON");
 				reset();
 			}
 		},
