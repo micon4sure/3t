@@ -1,18 +1,19 @@
 <template>
 	<div class="home">
-    <input v-model="turnDelay"/>
-    <input v-model="roundDelay"/>
-    <input v-model="drawDelay"/>
+		<input v-model="turnDelay" />
+		<input v-model="roundDelay" />
+		<input v-model="drawDelay" />
 		<div class="game playerBoard">
-			<Playerboard :alpha="alpha" />
+			<Playerboard :alpha="alphaTwo" />
 		</div>
 		<div class="refresh" :key="turn">
 			<div v-if="hiBoard" class="game hiBoard">
 				<Board :board="hiBoard" />
 			</div>
-			<span
+			<h3
 				id="id"
-			>Generation{{generation}}; Turn #{{turn}}; Score {{score}}; HiScore: {{hiScore}}; maxTurns: {{maxTurns}}</span>
+			>Generation{{generation}}; Turn #{{turn}}; Score {{score}}; HiScore: {{hiScore}}; maxTurns: {{maxTurns}}</h3>
+      <h3>Win1: {{winOne}}, Win2: {{winTwo}}</h3>
 			<div id="clear" />
 			<div v-for="game in games" :key="game.id" class="game">
 				<Board :board="game.board" :class="classForGame(game)" />
@@ -23,7 +24,8 @@
 
 <script>
 import _ from "lodash";
-import { Neat, methods, architect } from '@liquid-carrot/carrot';
+import { Neat, methods, architect } from "@liquid-carrot/carrot";
+import NeatSRC from "@liquid-carrot/carrot/src/neat";
 /*import Neat from '../../node_modules/@liquid-carrot/carrot/src/neat'
 import mutation from '../../node_modules/@liquid-carrot/carrot/src/methods/mutation'
 */
@@ -32,12 +34,12 @@ import Playerboard from "./Playerboard.vue";
 import Game from "../Game.js";
 
 const CONFIG = {
-  games: 12,
-  elitism: 4,
-  wait_on_draw: 30000,
-  roundDelay: 50,
-  turnDelay: 10,
-  drawDelay: 500
+	games: 55,
+	elitism: 11,
+	wait_on_draw: 30000,
+	roundDelay: 50,
+	turnDelay: 10,
+	drawDelay: 500
 };
 
 export default {
@@ -59,11 +61,14 @@ export default {
 			score: 0,
 			hiScore: 0,
 			hiBoard: null,
-			alpha: null,
-      maxTurns: 0,
-      turnDelay: CONFIG.turnDelay,
-      roundDelay: CONFIG.roundDelay,
-      drawDelay: CONFIG.drawDelay
+			alphaOne: null,
+			alphaTwo: null,
+			maxTurns: 0,
+			winOne: 0,
+			winTwo: 0,
+			turnDelay: CONFIG.turnDelay,
+			roundDelay: CONFIG.roundDelay,
+			drawDelay: CONFIG.drawDelay
 		};
 	},
 	methods: {
@@ -75,16 +80,16 @@ export default {
 			this.turn = 0;
 			for (let i = 0; i < CONFIG.games; ) {
 				const game = new Game(this.generation + ":" + i);
-				let playerOne = this.neatPOne.population[i]
-        let playerTwo = this.neatPTwo.population[i++];
-        
-        // in case of error during evolution, need to set new networks by hand, just use a perceptron.
-        if(playerOne === undefined) {
-          playerOne = architect.Perceptron(9, 9, 9, 9);
-        }
-        if(playerTwo === undefined) {
-          playerTwo = architect.Perceptron(9, 9, 9, 9);
-        }
+				let playerOne = this.neatPOne.population[i];
+				let playerTwo = this.neatPTwo.population[i++];
+
+				// in case of error during evolution, need to set new networks by hand, just use a perceptron.
+				if (playerOne === undefined) {
+					playerOne = architect.Perceptron(9, 9, 9, 9);
+				}
+				if (playerTwo === undefined) {
+					playerTwo = architect.Perceptron(9, 9, 9, 9);
+				}
 
 				game.setPOne(playerOne);
 				game.setPTwo(playerTwo);
@@ -94,11 +99,15 @@ export default {
 				let done = true;
 				_.each(this.games, game => {
 					if (!game.done) {
-						game.turn();
+						game.playTurn();
 					}
 					done = done && game.done;
 				});
 				if (done) {
+					_.each(this.games, game => {
+						if (game.status == "win1") this.winOne++;
+						if (game.status == "win2") this.winTwo++;
+					});
 					window.clearInterval(interval);
 					this.done = true;
 					this.generation++;
@@ -109,17 +118,30 @@ export default {
 	},
 	computed: {},
 	created() {
+		const mutation = methods.mutation;
 		const options = {
 			population_size: CONFIG.games,
 			elitism: CONFIG.elitism,
 			mutation_rate: 0.9,
 			mutation_amount: 2,
-			maxNodes: 19,
+			maxNodes: 14,
 			maxConnections: 100,
-      maxGates: 0,
-      mutation: methods.mutation.FFW,
+			maxGates: 0,
+			mutation: [
+				mutation.MOD_BIAS,
+				mutation.MOD_WEIGHT,
+				mutation.ADD_NODE,
+				mutation.ADD_CONN
+			]
 		};
 		this.neatPOne = new Neat(9, 1, options);
+		this.neatPTwo = new Neat(9, 1, options);
+		/**const template = architect.Perceptron(9, 6, 1);
+		this.neatPTwo = new NeatSRC({
+			...options,
+			template,
+			mutation: [mutation.MOD_BIAS, mutation.MOD_WEIGHT]
+		});*/
 		this.neatPTwo = new Neat(9, 1, options);
 		this.play();
 		const turn = () => {
@@ -137,8 +159,12 @@ export default {
 						this.hiBoard = game.board;
 					}
 					if (game.pTwo.score >= this.hiScore) {
-						this.alpha = game.pTwo;
-						window.alpha = this.alpha;
+						this.alphaTwo = game.pTwo;
+						window.alphaTwo = this.alphaTwo;
+					}
+					if (game.pOne.score >= this.hiScore) {
+						this.alphaOne = game.pOne;
+						window.alphaOne = this.alphaOne;
 					}
 					if (this.turn > this.maxTurns) {
 						this.maxTurns = this.turn;
@@ -149,12 +175,12 @@ export default {
 				});
 				window.clearInterval(turnInterval);
 				window.setTimeout(async () => {
-          try {
-  					await this.neatPOne.evolve();
-	  				await this.neatPTwo.evolve();
-          } catch(error) {
-            console.log('EVOLVE ERROR CAUGHT', error)
-          }
+					try {
+						await this.neatPOne.evolve();
+						await this.neatPTwo.evolve();
+					} catch (error) {
+						console.log("EVOLVE ERROR CAUGHT", error);
+					}
 					this.done = false;
 					this.score = 0;
 					this.play();
