@@ -16,13 +16,13 @@ const INCENTIVES = {
     },
     win_prevent(player, otherPlayer) {
       //console.log('WIN PREVENT', player.score)
-      player.score += 3;
+      player.score += 2;
       otherPlayer.score -= 1;
     },
     draw(player, otherPlayer) {
       //console.log('DRAW', player.score)
-      player.score += 3;
-      otherPlayer.score += 3;
+      player.score += 2;
+      otherPlayer.score += 2;
     },
     turn_end(player, otherPlayer) {
       //console.log('TURN END', player.score, player.playerId)
@@ -38,18 +38,24 @@ export default class Game {
     this.board = [0, 0, 0, 0, 0, 0, 0, 0, 0];
 	}
 
-	setPOne(network) {
+	setplayerOne(network) {
     network.score = 0;
-		this.pOne = network;
+		this.playerOne = network;
 	}
-	setPTwo(network) {
+	setplayerTwo(network) {
 		network.score = 0;
-		this.pTwo = network;
+		this.playerTwo = network;
+  }
+  getPlayerOne() {
+    return this.playerOne;
+  }
+  getPlayerTwo() {
+    return this.playerTwo;
   }
   
 	playTurn() {
-    const player = this.turn == 0.5 ? this.pOne : this.pTwo;
-    const otherPlayer = this.turn == 1 ? this.pOne : this.pTwo;
+    const player = this.turn == 0.5 ? this.playerOne : this.playerTwo;
+    const otherPlayer = this.turn == 1 ? this.playerOne : this.playerTwo;
     const move = Game.getMove(player, this.board);
 		if (this.board[move] != 0) {
       INCENTIVES.illegal_move(player, otherPlayer)

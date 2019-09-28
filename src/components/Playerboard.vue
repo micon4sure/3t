@@ -1,6 +1,8 @@
 <template>
 <div v-if="alpha">
+  
 	<table :key="key">
+    <tr><td colspan="3">{{ alpha.playerId }}</td></tr>
 		<tr>
 			<td @click="clickety(0)">{{ format(board[0]) }}</td>
 			<td @click="clickety(1)">{{ format(board[1]) }}</td>
