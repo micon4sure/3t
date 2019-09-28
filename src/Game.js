@@ -22,7 +22,7 @@ const INCENTIVES = {
     draw(player, otherPlayer) {
       //console.log('DRAW', player.score)
       player.score += 3;
-      oterPlayer.score += 3;
+      otherPlayer.score += 3;
     },
     turn_end(player, otherPlayer) {
       //console.log('TURN END', player.score, player.playerId)
