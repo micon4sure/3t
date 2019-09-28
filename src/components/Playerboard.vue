@@ -31,6 +31,9 @@ function normalize(high, low, value) {
 function denormalize(high, low, value) {
 	return +low + value * (high - low);
 }
+
+import Game from '../Game'
+
 export default {
 	mixins: [],
 	props: ["alpha"],
@@ -63,12 +66,11 @@ export default {
 
 			if (this.checkForWin()) {
 				console.log("YOU WIN");
-				reset();
+        reset();
+        return;
 			}
 
-			const moveRaw = this.alpha.activate(this.board);
-			const moveDenormalized = denormalize(9, 0, moveRaw);
-			const move = Math.round(moveDenormalized);
+      const move = Game.getMove(this.alpha, this.board)
 			if (this.board[move] != 0) {
 				console.log("THE CARROT LOST, MOVE ON CELL", move, "IS ILLEGAL");
 				reset();

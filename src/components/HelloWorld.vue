@@ -13,7 +13,7 @@
 			<h3
 				id="id"
 			>Generation{{generation}}; Turn #{{turn}}; Score {{score}}; HiScore: {{hiScore}}; maxTurns: {{maxTurns}}</h3>
-      <h3>Win1: {{winOne}}, Win2: {{winTwo}}</h3>
+			<h3>Win1: {{winOne}}, Win2: {{winTwo}}</h3>
 			<div id="clear" />
 			<div v-for="game in games" :key="game.id" class="game">
 				<Board :board="game.board" :class="classForGame(game)" />
@@ -38,8 +38,8 @@ const CONFIG = {
 	elitism: 11,
 	wait_on_draw: 30000,
 	roundDelay: 50,
-	turnDelay: 10,
-	drawDelay: 500
+	turnDelay: 50,
+	drawDelay: 50
 };
 
 export default {
@@ -78,23 +78,20 @@ export default {
 		play() {
 			this.games = [];
 			this.turn = 0;
-			for (let i = 0; i < CONFIG.games; ) {
+			for (let i = 0; i < CONFIG.games; i++) {
 				const game = new Game(this.generation + ":" + i);
-				let playerOne = this.neatPOne.population[i];
-				let playerTwo = this.neatPTwo.population[i++];
+				const playerOne = this.neatPOne.population[i];
+				const playerTwo = this.neatPTwo.population[i];
 
-				// in case of error during evolution, need to set new networks by hand, just use a perceptron.
-				if (playerOne === undefined) {
-					playerOne = architect.Perceptron(9, 9, 9, 9);
-				}
-				if (playerTwo === undefined) {
-					playerTwo = architect.Perceptron(9, 9, 9, 9);
-				}
+				playerOne.playerId = this.generation + ":" + i + "#1";
+				playerTwo.playerId = this.generation + ":" + i + "#2";
 
 				game.setPOne(playerOne);
 				game.setPTwo(playerTwo);
+
 				this.games.push(game);
 			}
+
 			const interval = window.setInterval(() => {
 				let done = true;
 				_.each(this.games, game => {
@@ -127,22 +124,22 @@ export default {
 			maxNodes: 14,
 			maxConnections: 100,
 			maxGates: 0,
-			mutation: [
+			/*mutation: [
 				mutation.MOD_BIAS,
 				mutation.MOD_WEIGHT,
 				mutation.ADD_NODE,
 				mutation.ADD_CONN
-			]
+      ]*/
+			mutation: mutation.FFW
 		};
-		this.neatPOne = new Neat(9, 1, options);
-		this.neatPTwo = new Neat(9, 1, options);
+		this.neatPOne = new Neat(9, 9, options);
+		this.neatPTwo = new Neat(9, 9, options);
 		/**const template = architect.Perceptron(9, 6, 1);
 		this.neatPTwo = new NeatSRC({
 			...options,
 			template,
 			mutation: [mutation.MOD_BIAS, mutation.MOD_WEIGHT]
 		});*/
-		this.neatPTwo = new Neat(9, 1, options);
 		this.play();
 		const turn = () => {
 			if (this.done) {
@@ -175,12 +172,8 @@ export default {
 				});
 				window.clearInterval(turnInterval);
 				window.setTimeout(async () => {
-					try {
-						await this.neatPOne.evolve();
-						await this.neatPTwo.evolve();
-					} catch (error) {
-						console.log("EVOLVE ERROR CAUGHT", error);
-					}
+					await this.neatPOne.evolve();
+					await this.neatPTwo.evolve();
 					this.done = false;
 					this.score = 0;
 					this.play();
@@ -247,7 +240,7 @@ body {
 .status_going td {
 	border: 1px solid #eee;
 }
-.status_loss td {
+.status_illegal td {
 	border: 1px solid #555;
 	color: #eee;
 }

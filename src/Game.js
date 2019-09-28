@@ -4,36 +4,56 @@ function normalize(high, low, value) {
 function denormalize(high, low, value) {
 	return +low + value * (high - low);
 }
+const INCENTIVES = {
+    illegal_move(player, otherPlayer) {
+      //console.log('ILLEGAL MOVE', player.score)
+      player.score -= 3;
+    },
+    win(player, otherPlayer) {
+      //console.log('WIN', player.score)
+      player.score += 3;
+      otherPlayer.score -= 1;
+    },
+    win_prevent(player, otherPlayer) {
+      //console.log('WIN PREVENT', player.score)
+      player.score += 3;
+      otherPlayer.score -= 1;
+    },
+    draw(player, otherPlayer) {
+      //console.log('DRAW', player.score)
+      player.score += 3;
+      oterPlayer.score += 3;
+    },
+    turn_end(player, otherPlayer) {
+      //console.log('TURN END', player.score, player.playerId)
+      player.score += 1;
+    }
+}
 export default class Game {
 	constructor(id) {
 		this.id = id;
 		this.status = "going";
 		this.done = false;
 		this.turn = 0.5;
-		this.board = [0, 0, 0, 0, 0, 0, 0, 0, 0];
+    this.board = [0, 0, 0, 0, 0, 0, 0, 0, 0];
 	}
 
 	setPOne(network) {
-		network.score = 0;
+    network.score = 0;
 		this.pOne = network;
 	}
 	setPTwo(network) {
 		network.score = 0;
 		this.pTwo = network;
-	}
-
+  }
+  
 	playTurn() {
     const player = this.turn == 0.5 ? this.pOne : this.pTwo;
     const otherPlayer = this.turn == 1 ? this.pOne : this.pTwo;
-		const moveRaw = player.activate(this.board);
-    let moveDenormalized = denormalize(8, 0, moveRaw);
-    if(moveDenormalized < 0)
-    moveDenormalized = moveDenormalized * -1;
-    const move = Math.round(moveDenormalized);
-
+    const move = Game.getMove(player, this.board);
 		if (this.board[move] != 0) {
-			player.score -= 100;
-			this.status = "loss";
+      INCENTIVES.illegal_move(player, otherPlayer)
+			this.status = "illegal";
 			//console.log("GAME", this.id, "LOST BY", this.next);
 			this.done = true;
 			return;
@@ -42,12 +62,13 @@ export default class Game {
     // check if this move prevents a win for the other player
     this.board[move] = this.turn == .5 ? 1 : .5;
     if(this.checkForWin()) {
-      player.score += 3;
+      INCENTIVES.win_prevent(player, otherPlayer);
     }
     
 		this.board[move] = this.turn;
     
 		if (this.checkForDraw()) {
+      INCENTIVES.draw(player, otherPlayer)
       this.status = "draw";
 			this.done = true;
 			return;
@@ -55,16 +76,15 @@ export default class Game {
     
 		if (this.checkForWin()) {
       this.status = "win" + (this.turn == 0.5 ? 1 : 2);
-			player.score += 5;
-      otherPlayer.score -= 5;
+      INCENTIVES.win(player, otherPlayer);
 			this.done = true;
 			return;
-		}
-		player.score += 1;
+    }
+    INCENTIVES.turn_end(player, otherPlayer)
 
 		this.turn = this.turn == 0.5 ? 1 : 0.5;
-	}
-
+  }
+  
 	checkForDraw() {
 		let draw = true;
 		_.each(this.board, value => {
@@ -73,7 +93,20 @@ export default class Game {
 			}
 		});
 		return draw;
-	}
+  }
+  
+  static getMove(player, board) {
+    const moveRaw = player.activate(board);
+    let move = 0;
+    let max = 0;
+    _.each(moveRaw, (value, cell) => {
+      if(value > max) {
+        move = cell;
+        max = value
+      }
+    });
+    return move;
+  }
 
 	checkForWin() {
 		const allFieldsSame = (start, step) => {
