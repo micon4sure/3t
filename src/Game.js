@@ -48,10 +48,6 @@ export default class Game {
     this.playerOne = network;
   }
 
-  getPlayerOne() {
-    return this.playerOne;
-  }
-
   playTurn() {
     const player = this.turn === 0.5 ? this.playerOne : {};
     const otherPlayer = this.turn === 1 ? this.playerOne : {};
