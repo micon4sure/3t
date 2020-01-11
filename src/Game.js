@@ -30,7 +30,7 @@ export default class Game {
       }
       move = _.sample(moves);
     } else {
-      const moveRaw = player.activate(board);
+      const moveRaw = player.activate(board, {no_trace: true});
       let move = 0;
       let max = 0;
       _.each(moveRaw, (value, cell) => {
