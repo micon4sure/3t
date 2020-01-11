@@ -9,7 +9,7 @@
     </div>
     <div :key="turn" class="refresh">
       <h3 id="id">Generation: {{generation}}</h3>
-      <h3>Win Rate: {{100*(winOne+draw)/(winOne+winTwo+draw)}}%</h3>
+      <h3>Win rate: {{100*(winOne+draw)/(winOne+winTwo+draw)}}%</h3>
       <div id="clear"/>
       <div :key="game.id" class="game" v-for="game in games">
         <Board :board="game.board" :class="classForGame(game)"/>
@@ -32,9 +32,9 @@
   import vis from 'vis-network'
 
   const CONFIG = {
-    games: 150,
-    elitism: 15,
-    delay: 0,
+    games: 104,
+    elitism: 20,
+    delay: 10,
   };
 
   export default {
@@ -69,10 +69,9 @@
         this.turn = 0;
         for (let i = 0; i < CONFIG.games; i++) {
           const game = new Game(this.generation + ":" + i);
+
           const playerOne = this.neatPlayerOne.population[i];
-
           playerOne.playerId = this.generation + ":" + i + "#1";
-
           game.setplayerOne(playerOne);
 
           this.games.push(game);
@@ -82,9 +81,13 @@
           while (!game.done) {
             game.playTurn();
           }
-          if (game.status === "win1") this.winOne++;
-          else if (game.status === "win2") this.winTwo++;
-          else if (game.status === "draw") this.draw++;
+          if (game.status === "win1") {
+            this.winOne++;
+          } else if (game.status === "win2") {
+            this.winTwo++;
+          } else if (game.status === "draw") {
+            this.draw++;
+          }
           this.turn++;
         });
         this.done = true;
@@ -112,7 +115,7 @@
 
         // Flattens neuron layers from `Network.toJSON` and converts it to 'vis-network'
         const nodes = new vis.DataSet(
-          neurons.map(function (neuron, i) {
+          neurons.map(function (neuron) {
             let color;
             if (neuron.type === 'input') {
               color = 'green';
@@ -176,10 +179,10 @@
       const options = {
         population_size: CONFIG.games,
         elitism: CONFIG.elitism,
-        mutation_rate: 0.9,
-        amount: 5,
+        mutation_rate: 0.8,
+        amount: 10,
+        growth: 0,
         maxGates: 0,
-        selection: methods.selection.TOURNAMENT,
         mutation: mutation.FFW
       };
       this.neatPlayerOne = new NeatSRC(9, 9, options);
