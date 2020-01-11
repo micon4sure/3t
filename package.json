@@ -7,7 +7,7 @@
     "build": "vue-cli-service build"
   },
   "dependencies": {
-    "@liquid-carrot/carrot": "^0.3.18",
+    "@liquid-carrot/carrot": "git+https://github.com/liquidcarrot/carrot.git#add-reinforcement-learning",
     "cola": "^0.1.7",
     "core-js": "^2.6.11",
     "lodash": "^4.17.15",
