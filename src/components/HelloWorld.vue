@@ -78,22 +78,18 @@
           this.games.push(game);
         }
 
-        const interval = window.setInterval(() => {
-          _.each(this.games, game => {
-            if (!game.done) {
-              game.playTurn();
-            }
-            _.each(this.games, game => {
-              if (game.status === "win1") this.winOne++;
-              else if (game.status === "win2") this.winTwo++;
-              else if (game.status === "draw") this.draw++;
-            });
-            window.clearInterval(interval);
-            this.done = true;
-            this.generation++;
-            this.graph();
-          });
-        }, this.delay);
+        _.each(this.games, game => {
+          while (!game.done) {
+            game.playTurn();
+            this.turn++;
+          }
+          if (game.status === "win1") this.winOne++;
+          else if (game.status === "win2") this.winTwo++;
+          else if (game.status === "draw") this.draw++;
+        });
+        this.done = true;
+        this.generation++;
+        this.graph();
       },
       graph: async function () {
         if (!this.alphaOne) {
@@ -182,6 +178,7 @@
         elitism: CONFIG.elitism,
         mutation_rate: 0.9,
         mutation_amount: 5,
+        amount: 5,
         maxGates: 0,
         selection: methods.selection.TOURNAMENT,
         mutation: mutation.FFW
