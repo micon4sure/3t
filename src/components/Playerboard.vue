@@ -1,24 +1,24 @@
 <template>
-    <div v-if="alpha">
-        <table :key="key">
-            <tr>
-                <td @click="clickety(0)">{{ format(board[0]) }}</td>
-                <td @click="clickety(1)">{{ format(board[1]) }}</td>
-                <td @click="clickety(2)">{{ format(board[2]) }}</td>
-            </tr>
-            <tr>
-                <td @click="clickety(3)">{{ format(board[3]) }}</td>
-                <td @click="clickety(4)">{{ format(board[4]) }}</td>
-                <td @click="clickety(5)">{{ format(board[5]) }}</td>
-            </tr>
-            <tr>
-                <td @click="clickety(6)">{{ format(board[6]) }}</td>
-                <td @click="clickety(7)">{{ format(board[7]) }}</td>
-                <td @click="clickety(8)">{{ format(board[8]) }}</td>
-            </tr>
-        </table>
-        <svg id="graph"/>
-    </div>
+  <div v-if="alpha">
+    <table :key="key">
+      <tr>
+        <td @click="clickety(0)">{{ format(board[0]) }}</td>
+        <td @click="clickety(1)">{{ format(board[1]) }}</td>
+        <td @click="clickety(2)">{{ format(board[2]) }}</td>
+      </tr>
+      <tr>
+        <td @click="clickety(3)">{{ format(board[3]) }}</td>
+        <td @click="clickety(4)">{{ format(board[4]) }}</td>
+        <td @click="clickety(5)">{{ format(board[5]) }}</td>
+      </tr>
+      <tr>
+        <td @click="clickety(6)">{{ format(board[6]) }}</td>
+        <td @click="clickety(7)">{{ format(board[7]) }}</td>
+        <td @click="clickety(8)">{{ format(board[8]) }}</td>
+      </tr>
+    </table>
+    <svg id="graph"/>
+  </div>
 </template>
 
 <script>

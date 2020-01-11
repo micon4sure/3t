@@ -1,24 +1,24 @@
 <template>
-    <div class="home">
-        <label>
-            Time delay:
-            <input v-model="delay"/>
-        </label>
-        <div class="game playerBoard">
-            <Playerboard :alpha="alphaOne"/>
-        </div>
-        <div :key="turn" class="refresh">
-            <h3 id="id">Generation: {{generation}}</h3>
-            <h3>Win1: {{winOne}}; Win2: {{winTwo}}, Draw: {{draw}}</h3>
-            <div id="clear"/>
-            <div :key="game.id" class="game" v-for="game in games">
-                <Board :board="game.board" :class="classForGame(game)"/>
-            </div>
-        </div>
-        <div class="field">
-            <div class="visualization" ref="visualization"></div>
-        </div>
+  <div class="home">
+    <label>
+      Time delay:
+      <input v-model="delay"/>
+    </label>
+    <div class="game playerBoard">
+      <Playerboard :alpha="alphaOne"/>
     </div>
+    <div :key="turn" class="refresh">
+      <h3 id="id">Generation: {{generation}}</h3>
+      <h3>Win Rate: {{100*(winOne+draw)/(winOne+winTwo+draw)}}%</h3>
+      <div id="clear"/>
+      <div :key="game.id" class="game" v-for="game in games">
+        <Board :board="game.board" :class="classForGame(game)"/>
+      </div>
+    </div>
+    <div class="field">
+      <div class="visualization" ref="visualization"></div>
+    </div>
+  </div>
 </template>
 
 <script>
@@ -32,8 +32,8 @@
   import vis from 'vis-network'
 
   const CONFIG = {
-    games: 50,
-    elitism: 5,
+    games: 150,
+    elitism: 15,
     delay: 0,
   };
 
@@ -79,14 +79,10 @@
         }
 
         const interval = window.setInterval(() => {
-          let done = true;
           _.each(this.games, game => {
             if (!game.done) {
               game.playTurn();
             }
-            done = done && game.done;
-          });
-          if (done) {
             _.each(this.games, game => {
               if (game.status === "win1") this.winOne++;
               else if (game.status === "win2") this.winTwo++;
@@ -96,8 +92,7 @@
             this.done = true;
             this.generation++;
             this.graph();
-          }
-          this.turn++;
+          });
         }, this.delay);
       },
       graph: async function () {
@@ -188,6 +183,7 @@
         mutation_rate: 0.9,
         mutation_amount: 5,
         maxGates: 0,
+        selection: methods.selection.TOURNAMENT,
         mutation: mutation.FFW
       };
       this.neatPlayerOne = new NeatSRC(9, 9, options);
@@ -220,83 +216,83 @@
 </script>
 
 <style>
-    .game {
-        width: 100%;
-    }
+  .game {
+    width: 100%;
+  }
 
-    .game table {
-        margin: 10px;
-        float: left;
-    }
+  .game table {
+    margin: 10px;
+    float: left;
+  }
 
-    .game table td {
-        width: 20px;
-        height: 20px;
-        text-align: center;
-        line-height: 20px;
-        color: white;
-    }
+  .game table td {
+    width: 20px;
+    height: 20px;
+    text-align: center;
+    line-height: 20px;
+    color: white;
+  }
 
-    #id {
-        font-size: 20px;
-        font-weight: 300;
-    }
+  #id {
+    font-size: 20px;
+    font-weight: 300;
+  }
 
-    body {
-        background: #333;
-        color: white;
-    }
+  body {
+    background: #333;
+    color: white;
+  }
 
-    .game.hiBoard table {
-        float: right;
-        width: auto;
-    }
+  .game.hiBoard table {
+    float: right;
+    width: auto;
+  }
 
-    .game.hiBoard table td {
-        width: 10px;
-        height: 10px;
-        line-height: 10px;
-        font-size: 10px;
-        border: 1px solid #555;
-        color: #999;
-    }
+  .game.hiBoard table td {
+    width: 10px;
+    height: 10px;
+    line-height: 10px;
+    font-size: 10px;
+    border: 1px solid #555;
+    color: #999;
+  }
 
-    .game.playerBoard table {
-        float: right;
-        width: auto;
-    }
+  .game.playerBoard table {
+    float: right;
+    width: auto;
+  }
 
-    .game.playerBoard table td {
-        width: 30px;
-        height: 30px;
-        line-height: 30px;
-        font-size: 30px;
-        border: 1px solid white;
-        color: white;
-    }
+  .game.playerBoard table td {
+    width: 30px;
+    height: 30px;
+    line-height: 30px;
+    font-size: 30px;
+    border: 1px solid white;
+    color: white;
+  }
 
-    .status_going td {
-        border: 1px solid #eee;
-    }
+  .status_going td {
+    border: 1px solid #eee;
+  }
 
-    .status_illegal td {
-        border: 1px solid #555;
-        color: #eee;
-    }
+  .status_illegal td {
+    border: 1px solid #555;
+    color: #eee;
+  }
 
-    .status_win1 td {
-        border: 1px solid #61df0d;
-    }
+  .status_win1 td {
+    border: 1px solid #61df0d;
+  }
 
-    .status_win2 td {
-        border: 1px solid #220ddf;
-    }
+  .status_win2 td {
+    border: 1px solid #220ddf;
+  }
 
-    .status_draw td {
-        border: 1px solid red;
-    }
+  .status_draw td {
+    border: 1px solid red;
+  }
 
-    #clear {
-        clear: right;
-    }
+  #clear {
+    clear: right;
+  }
 </style>
