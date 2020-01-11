@@ -81,11 +81,11 @@
         _.each(this.games, game => {
           while (!game.done) {
             game.playTurn();
-            this.turn++;
           }
           if (game.status === "win1") this.winOne++;
           else if (game.status === "win2") this.winTwo++;
           else if (game.status === "draw") this.draw++;
+          this.turn++;
         });
         this.done = true;
         this.generation++;
@@ -177,7 +177,6 @@
         population_size: CONFIG.games,
         elitism: CONFIG.elitism,
         mutation_rate: 0.9,
-        mutation_amount: 5,
         amount: 5,
         maxGates: 0,
         selection: methods.selection.TOURNAMENT,
