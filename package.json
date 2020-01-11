@@ -7,17 +7,17 @@
     "build": "vue-cli-service build"
   },
   "dependencies": {
-    "@liquid-carrot/carrot": "^0.3.16",
+    "@liquid-carrot/carrot": "^0.3.18",
     "cola": "^0.1.7",
-    "core-js": "^2.6.5",
+    "core-js": "^2.6.11",
     "lodash": "^4.17.15",
-    "vis-network": "^6.0.0",
-    "vue": "^2.6.10",
+    "vis-network": "^6.5.0",
+    "vue": "^2.6.11",
     "webcola": "^3.4.0"
   },
   "devDependencies": {
-    "@vue/cli-plugin-babel": "^3.11.0",
-    "@vue/cli-service": "^3.11.0",
-    "vue-template-compiler": "^2.6.10"
+    "@vue/cli-plugin-babel": "^3.12.1",
+    "@vue/cli-service": "^4.1.2",
+    "vue-template-compiler": "^2.6.11"
   }
 }
