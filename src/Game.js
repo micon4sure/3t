@@ -85,24 +85,30 @@ export default class Game {
   checkForWin() {
     const allFieldsSame = (start, step) => {
       const firstField = this.board[start];
-      return firstField === 0
-        ? false
-        : this.board[start + step] === firstField && this.board[start + step + step] === firstField;
+      if (firstField === 0) {
+        return false;
+      } else if (this.board[start + step] === firstField && this.board[start + step + step] === firstField) {
+        return true;
+      }
     };
     /*
     0 1 2
     3 4 5
     6 7 8
     */
-    return allFieldsSame(0, 1) ||
-    allFieldsSame(3, 1) ||
-    allFieldsSame(6, 1)
-      ? true
-      : allFieldsSame(0, 3) ||
-      allFieldsSame(1, 3) ||
-      allFieldsSame(2, 3)
-        ? true :
-        allFieldsSame(0, 4) ||
-        allFieldsSame(2, 2);
+    if (allFieldsSame(0, 1) || allFieldsSame(3, 1) || allFieldsSame(6, 1)) {
+      // horizontal win
+      return true;
+    }
+
+    if (allFieldsSame(0, 3) || allFieldsSame(1, 3) || allFieldsSame(2, 3)) {
+      // vertical win
+      return true;
+    }
+
+    if (allFieldsSame(0, 4) || allFieldsSame(2, 2)) {
+      // diagnoal win
+      return true;
+    }
   }
 }
