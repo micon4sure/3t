@@ -2,12 +2,20 @@ import * as carrot from "@liquid-carrot/carrot"
 
 const INCENTIVES = {
   win(player, otherPlayer) {
-    player.score += 3;
-    otherPlayer.score -= 3;
+    if (player.nodes !== undefined) {
+      player.score += 3;
+    }
+    if (otherPlayer.nodes !== undefined) {
+      otherPlayer.score -= 3;
+    }
   },
   draw(player, otherPlayer) {
-    player.score++;
-    otherPlayer.score++;
+    if (player.nodes !== undefined) {
+      player.score++;
+    }
+    if (otherPlayer.nodes !== undefined) {
+      otherPlayer.score++;
+    }
   },
 }
 export default class Game {
@@ -17,19 +25,13 @@ export default class Game {
     this.done = false;
     this.turn = 0.5;
     this.board = [0, 0, 0, 0, 0, 0, 0, 0, 0];
+    this.playerOne = {};
+    this.playerTwo = {};
   }
 
   static getMove(player, board) {
     let move;
-    if (!(player instanceof carrot.Neat)) {
-      let moves = [];
-      for (let i = 0; i < board.length; i++) {
-        if (board[i] === 0) {
-          moves.push(i);
-        }
-      }
-      move = _.sample(moves);
-    } else {
+    if (player instanceof carrot.Network) {
       const moveRaw = player.activate(board, {no_trace: true});
       let move = 0;
       let max = 0;
@@ -39,18 +41,35 @@ export default class Game {
           max = value
         }
       });
+    } else {
+      let moves = [];
+      for (let i = 0; i < board.length; i++) {
+        if (board[i] === 0) {
+          moves.push(i);
+        }
+      }
+      move = _.sample(moves);
     }
     return move;
   }
 
   setplayerOne(network) {
-    network.score = 0;
+    if (network.nodes !== undefined) {
+      network.score = 0;
+    }
     this.playerOne = network;
   }
 
+  setplayerTwo(network) {
+    if (network.nodes !== undefined) {
+      network.score = 0;
+    }
+    this.playerTwo = network;
+  }
+
   playTurn() {
-    const player = this.turn === 0.5 ? this.playerOne : {};
-    const otherPlayer = this.turn === 1 ? this.playerOne : {};
+    const player = this.turn === 0.5 ? this.playerOne : this.playerTwo;
+    const otherPlayer = this.turn === 0.5 ? this.playerTwo : this.playerOne;
 
     const move = Game.getMove(player, this.board);
     this.board[move] = this.turn;
