@@ -183,7 +183,7 @@
         amount: 10,
         growth: 0,
         maxGates: 0,
-        mutation: mutation.FFW
+        mutation: [mutation.ADD_CONN, mutation.ADD_NODE, mutation.SUB_CONN, mutation.SUB_NODE, mutation.MOD_WEIGHT]
       };
       this.neatPlayerOne = new NeatSRC(9, 9, options);
       this.play();
