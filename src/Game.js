@@ -9,6 +9,14 @@ const INCENTIVES = {
       otherPlayer.score -= 3;
     }
   },
+  winPrevent(player, otherPlayer) {
+    if (player.nodes !== undefined) {
+      player.score += 2;
+    }
+    if (otherPlayer.nodes !== undefined) {
+      otherPlayer.score -= 2;
+    }
+  },
   draw(player, otherPlayer) {
     if (player.nodes !== undefined) {
       player.score++;
@@ -72,8 +80,14 @@ export default class Game {
     const otherPlayer = this.turn === 0.5 ? this.playerTwo : this.playerOne;
 
     const move = Game.getMove(player, this.board);
-    this.board[move] = this.turn;
 
+    //check if move prevents win
+    this.board[move] = this.turn === 0.5 ? 1 : 0.5;
+    if (this.checkForWin()) {
+      INCENTIVES.winPrevent(player, otherPlayer);
+    }
+
+    this.board[move] = this.turn;
     if (this.checkForWin()) {
       this.status = "win" + (this.turn === 0.5 ? 1 : 2);
       INCENTIVES.win(player, otherPlayer);

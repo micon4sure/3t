@@ -32,9 +32,9 @@
   import vis from 'vis-network'
 
   const CONFIG = {
-    games: 104,
-    elitism: 20,
-    delay: 10,
+    games: 20,
+    elitism: 2,
+    delay: 0,
   };
 
   export default {
@@ -180,7 +180,7 @@
         population_size: CONFIG.games,
         elitism: CONFIG.elitism,
         mutation_rate: 0.8,
-        amount: 10,
+        amount: 5,
         growth: 0,
         maxGates: 0,
         mutation: [mutation.ADD_CONN, mutation.ADD_NODE, mutation.SUB_CONN, mutation.SUB_NODE, mutation.MOD_WEIGHT]
