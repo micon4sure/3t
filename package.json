@@ -10,7 +10,7 @@
     "@liquid-carrot/carrot": "git+https://github.com/liquidcarrot/carrot.git#add-reinforcement-learning",
     "cola": "^0.1.7",
     "core-js": "^2.6.11",
-    "lodash": "^4.17.15",
+    "lodash": "^4.17.19",
     "vis-network": "^6.5.0",
     "vue": "^2.6.11",
     "webcola": "^3.4.0"
